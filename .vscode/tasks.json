@@ -1,7 +1,7 @@
 {
 	"version": "0.1.0",
 	"command": "gcc",
-	"args": ["-Wall", "main.c", "-o", "main"],
+	"args": ["-Wall", "main.c", "-o", "main", "-lsimple2d"],
 	"problemMatcher": {
         "owner": "cpp",
         "fileLocation": ["relative", "${workspaceRoot}"],
