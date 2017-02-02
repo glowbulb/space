@@ -39,7 +39,7 @@ int main(int argc, char **argv){
    al_draw_bitmap(image,200,200,0);
 
    al_flip_display();
-   al_rest(100);
+   al_rest(30);
 
    al_destroy_display(display);
    al_destroy_bitmap(image);
