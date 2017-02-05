@@ -25,5 +25,4 @@ int main(void) {
     printf("%s", db_result.s);
     return 0;
 
-
 }
