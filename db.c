@@ -1,28 +1,36 @@
+#define _GNU_SOURCE
 #include <sqlite3.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <sds.h>
-#include <sb.h>
 #include "db.h"
+#include "ltb.h"
 
-int main(void) {
+struct enemy_t {
+    char *name;
+    int life;
+    int xpos;
+    int ypos;
+};
 
-    char *rekt = "rekt";
+struct enemy_t enemies[5] = {
+    {"dragon",10,5,5},
+    {"fairy",5,10,10},
+    {"turtle",2,20,20},
+    {"mushroom",1,25,25},
+    {"skelly",7,15,15}
+};
 
-    char *sql = sqlite3_mprintf(
-        "CREATE TABLE Cars(Id INT, Name TEXT, Price INT);" 
-        "INSERT INTO Cars VALUES(1, 'Audi', 52642);" 
-        "INSERT INTO Cars VALUES(2, 'Mercedes', 57127);" 
-        "INSERT INTO Cars VALUES(3, 'Skoda', 9000);" 
-        "INSERT INTO Cars VALUES(4, 'Volvo', 29000);" 
-        "INSERT INTO Cars VALUES(5, 'Bentley', 350000);" 
-        "INSERT INTO Cars VALUES(6, 'Citroen', 21000);" 
-        "INSERT INTO Cars VALUES(7, '%q', 41400);" 
-        "INSERT INTO Cars VALUES(8, '%q', 21600);"
-        "SELECT * FROM CARS;", rekt, rekt);
+int main(int argc, char **argv) {
 
-    db_query(sql);
-    printf("%s", db_result.s);
+    ltb_foreach(struct enemy_t *v, enemies) {
+        printf("%s\n", v[0].name);
+    }
+
+    db_query(db_create_table("enemies","name","life","xpos","ypos"));
+    db_query(db_insert_row("enemies","dragon",10,5,5));
+    db_query(db_select_table("enemies"));
+//    sqlite3_free(query);
     return 0;
 
 }
