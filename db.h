@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ltb.h"
 
 sqlite3 *db;
 char *err_msg = 0;
