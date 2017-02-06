@@ -14,6 +14,16 @@ struct monsters_t {
     int ypos;
 };
 
+void monsters_print(struct monsters_t a[], int b){
+    for (int i = 0; i < b; i++) {
+        printf("%s %d %d %d\n", a[i].name, a[i].life, a[i].xpos, a[i].ypos);
+    }
+}
+
+void monster_print(struct monsters_t a){
+    printf("%s %d %d %d\n", a.name, a.life, a.xpos, a.ypos);
+}
+
 int db_callback(void *a, int argc, char **argv, char **azColName) {
     for (int i = 0; i < argc; i++) {
         printf("%s = %s\n", azColName[i], argv[i]);
@@ -27,48 +37,62 @@ void db_query(char *q) {
     sqlite3_close(db);
 }
 
-char * db_insert_monsters(struct monsters_t a[]){
+struct monsters_t db_select_monsters(char *a){
+    sqlite3_stmt *r;
+    char * z;
+    sqlite3_open("sqlite.db", &db);
+    sqlite3_prepare_v2(db, a, -1, &r, 0);
+    sqlite3_step(r);
+    asprintf(&z, "%s", sqlite3_column_text(r, 0));
+    const struct monsters_t b = { z, sqlite3_column_int(r,1), sqlite3_column_int(r,2), sqlite3_column_int(r,3) };
+    sqlite3_finalize(r);
+    sqlite3_close(db);
+    return b;
+}
+
+char * db_insert_monsters(struct monsters_t a[], int b){
     char *x = "";
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < b; i++) {
         char *z;
-        asprintf(&z,"INSERT INTO monsters VALUES(%s, %d, %d, %d);",a[i].name,a[i].life,a[i].xpos,a[i].ypos);
-        asprintf(&x,"%s%s\n",x,z);
+        asprintf(&z,"INSERT INTO monsters VALUES('%s', %d, %d, %d);", a[i].name, a[i].life, a[i].xpos, a[i].ypos);
+        asprintf(&x,"%s%s", x, z);
+        free(z);
     }
-    char *insert_row = sqlite3_mprintf("%s",x);
-    return insert_row;
+    return x;
+}
+
+char * db_create_monsters(){
+    char *z;
+    asprintf(&z,"CREATE TABLE monsters(name TEXT, life INT, xpos INT, ypos INT);");
+    return z;
 }
 
 char * db_queue_two(char *a, char *b){
     char *z;
     asprintf(&z,"%s%s",a,b);
-    char *db_queue = sqlite3_mprintf("%s",z);
-    return db_queue;
+    return z;
 }
 
 char * db_queue_three(char *a, char *b, char *c){
     char *z;
     asprintf(&z,"%s%s%s",a,b,c);
-    char *db_queue = sqlite3_mprintf("%s",z);
-    return db_queue;
+    return z;
 }
 
 char * db_create_table(char *a, char *b, char *c, char *d, char *e){
     char *z;
-    asprintf(&z,"CREATE TABLE %s(%s TEXT, %s INT, %s INT, %s INT);",a,b,c,d,e);
-    char *create_table = sqlite3_mprintf("%s",z);
-    return create_table;
+    asprintf(&z,"CREATE TABLE %s(%s TEXT, %s INT, %s INT, %s INT);", a, b, c, d, e);
+    return z;
 }
 
 char * db_insert_row(char *a, char *b, int c, int d, int e){
     char *z;
-    asprintf(&z,"INSERT INTO %s VALUES(%s, %d, %d, %d);",a,b,c,d,e);
-    char *insert_row = sqlite3_mprintf("%s",z);
-    return insert_row;
+    asprintf(&z,"INSERT INTO %s VALUES(%s, %d, %d, %d);", a, b, c, d, e);
+    return z;
 }
 
 char * db_select_table(char *a){
     char *z;
-    asprintf(&z,"SELECT * FROM %s;",a);
-    char *select_table = sqlite3_mprintf("%s",z);
-    return select_table;
+    asprintf(&z,"SELECT * FROM %s;", a);
+    return z;
 }

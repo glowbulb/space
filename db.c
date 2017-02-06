@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "db.h"
-#include "ltb.h"
 
 struct monsters_t monsters[5] = {
     {"dragon",10,5,5},
@@ -24,9 +23,12 @@ int main(int argc, char **argv) {
     //     db_insert_row("monsters","'dragon'",10,5,5),
     //     db_select_table("monsters")));
 
-    db_query(db_insert_monsters(monsters));
+    db_query(db_queue_three(db_create_monsters(), db_insert_monsters(monsters, 5), db_select_table("monsters")));
 
-    
+    struct monsters_t result = db_select_monsters(db_select_table("monsters"));
+
+    monster_print(result);
+
     return 0;
 
 }
