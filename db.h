@@ -42,8 +42,11 @@ struct monsters_t db_select_monsters(char *a){
     char * z;
     sqlite3_open("sqlite.db", &db);
     sqlite3_prepare_v2(db, a, -1, &r, 0);
-    sqlite3_step(r);
-    asprintf(&z, "%s", sqlite3_column_text(r, 0));
+    while(sqlite3_column_int(r, 1) != NULL){
+        sqlite3_step(r);
+        asprintf(&z, "%s", sqlite3_column_text(r, 1));
+    }
+
     const struct monsters_t b = { z, sqlite3_column_int(r,1), sqlite3_column_int(r,2), sqlite3_column_int(r,3) };
     sqlite3_finalize(r);
     sqlite3_close(db);
