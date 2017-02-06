@@ -1,10 +1,10 @@
+#define _GNU_SOURCE
 #include <sqlite3.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <sds.h>
-#include <sb.h>
-#include "db.h"
 #include <allegro5/allegro.h>
+//#include "db.h"
 
 const float FPS = 60;
 const int SCREEN_W = 480;
