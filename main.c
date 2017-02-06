@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <allegro5/allegro.h>
-//#include "db.h"
+#include "db.h"
 
 const float FPS = 60;
 const int SCREEN_W = 480;

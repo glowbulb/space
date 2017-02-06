@@ -1,1 +1,1 @@
-gcc -Wall main.c -o space -lallegro -lallegro_dialog -lallegro_image
+gcc -Wall main.c -o space -lsqlite3 -lallegro -lallegro_dialog -lallegro_image
