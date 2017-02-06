@@ -15,14 +15,6 @@ struct monsters_t monsters[5] = {
 
 int main(int argc, char **argv) {
 
-//    ltb_foreach(struct enemy_t *v, enemies) { printf("%s\n", v[0].name); }
-    
-    
-    // db_query(db_queue_three(
-    //     db_create_table("monsters","name","life","xpos","ypos"),
-    //     db_insert_row("monsters","'dragon'",10,5,5),
-    //     db_select_table("monsters")));
-
     db_query(db_queue_three(db_create_monsters(), db_insert_monsters(monsters, 5), db_select_table("monsters")));
 
     struct monsters_t result = db_select_monsters(db_select_table("monsters"));
@@ -30,5 +22,4 @@ int main(int argc, char **argv) {
     monster_print(result);
 
     return 0;
-
 }
