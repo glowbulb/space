@@ -14,7 +14,7 @@ struct monsters_t {
     int ypos;
 };
 
-void monsters_print(struct monsters_t a[], int b){
+void monsters_print(struct monsters_t *a, int b){
     for (int i = 0; i < b; i++) {
         printf("%s %d %d %d\n", a[i].name, a[i].life, a[i].xpos, a[i].ypos);
     }
@@ -37,17 +37,28 @@ void db_query(char *q) {
     sqlite3_close(db);
 }
 
-struct monsters_t db_select_monsters(char *a){
+struct monsters_t * db_select_monsters(char *a){
+    char *s;
+    asprintf(&s, "select rowid from monsters order by rowid desc limit 1;");
     sqlite3_stmt *r;
-    char * z;
+    sqlite3_stmt *v;
+    char *z;
+    static struct monsters_t b[2];
     sqlite3_open("sqlite.db", &db);
+    sqlite3_prepare_v2(db, s, -1, &v, 0);
+    sqlite3_step(v);
+    printf("%d", sqlite3_column_int(r,0));
+    sqlite3_finalize(v);
     sqlite3_prepare_v2(db, a, -1, &r, 0);
-    while(sqlite3_column_int(r, 1) != NULL){
+    for (int i = 0; i < 2; i++) {
         sqlite3_step(r);
-        asprintf(&z, "%s", sqlite3_column_text(r, 1));
+        asprintf(&z, "%s", sqlite3_column_text(r, 0));
+        b[i].name = z;
+        b[i].life = sqlite3_column_int(r,1);
+        b[i].xpos = sqlite3_column_int(r,2);
+        b[i].ypos = sqlite3_column_int(r,3);
+        z = 0;
     }
-
-    const struct monsters_t b = { z, sqlite3_column_int(r,1), sqlite3_column_int(r,2), sqlite3_column_int(r,3) };
     sqlite3_finalize(r);
     sqlite3_close(db);
     return b;

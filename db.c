@@ -15,11 +15,11 @@ struct monsters_t monsters[5] = {
 
 int main(int argc, char **argv) {
 
-    db_query(db_queue_three(db_create_monsters(), db_insert_monsters(monsters, 5), db_select_table("monsters")));
+//    db_query(db_queue_three(db_create_monsters(), db_insert_monsters(monsters, 5), db_select_table("monsters")));
 
-    struct monsters_t result = db_select_monsters(db_select_table("monsters"));
+    struct monsters_t *result = db_select_monsters(db_select_table("monsters"));
 
-    monster_print(result);
+    monsters_print(result, 2);
 
     return 0;
 }
