@@ -16,22 +16,20 @@ struct monsters_t {
 };
 
 void store_length(struct monsters_t *a, int b){
-    int *c;
-    c = a - 8;
-    *c = b;
+    memcpy(a - 8, &b, 8);
 }
 
 int get_length(struct monsters_t *a){
-    static int *b;
-    b = a - 8;
-    return b;
+    int *x;
+    x = malloc(sizeof(int));
+    memcpy(x, a - 8, 8);
+    return *x;
 }
 
 void monsters_print(struct monsters_t *a){
-    for (int i = 0; i < sizeof(a) / sizeof(struct monsters_t); i++) {
+    for (int i = 0; i < get_length(a); i++) {
         printf("%s %d %d %d\n", a[i].name, a[i].life, a[i].xpos, a[i].ypos);
     }
-    printf("%lu", sizeof(*a));
 }
 
 void monster_print(struct monsters_t a){
@@ -56,19 +54,18 @@ struct monsters_t * db_select_monsters(char *a){
     int i = 0;
     sqlite3_open("sqlite.db", &db);
     sqlite3_prepare_v2(db, a, -1, &r, 0);
-    while (sqlite3_step(r) == SQLITE_ROW){
-        i++;
-    }
-//    static struct monsters_t e[i];
-    struct monsters_t* e = (struct monsters_t*)malloc(sizeof(struct monsters_t) * i);
+    struct monsters_t *e;
+    e = malloc(sizeof(int));
     i = 0;
     while (sqlite3_step(r) == SQLITE_ROW){
+        e = realloc(e, ((i + 1) * sizeof(struct monsters_t)) + 8);
         asprintf(&e[i].name,"%s", sqlite3_column_text(r, 0));
         e[i].life = sqlite3_column_int(r, 1);
         e[i].xpos = sqlite3_column_int(r, 2);
         e[i].ypos = sqlite3_column_int(r, 3);
         i++;
     }
+    store_length(e, i);
     sqlite3_finalize(r);
     sqlite3_close(db);
     return e;
