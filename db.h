@@ -2,6 +2,7 @@
 #include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 
 sqlite3 *db;
@@ -14,10 +15,23 @@ struct monsters_t {
     int ypos;
 };
 
-void monsters_print(struct monsters_t *a, int b){
-    for (int i = 0; i < b; i++) {
+void store_length(struct monsters_t *a, int b){
+    int *c;
+    c = a - 8;
+    *c = b;
+}
+
+int get_length(struct monsters_t *a){
+    static int *b;
+    b = a - 8;
+    return b;
+}
+
+void monsters_print(struct monsters_t *a){
+    for (int i = 0; i < sizeof(a) / sizeof(struct monsters_t); i++) {
         printf("%s %d %d %d\n", a[i].name, a[i].life, a[i].xpos, a[i].ypos);
     }
+    printf("%lu", sizeof(*a));
 }
 
 void monster_print(struct monsters_t a){
@@ -38,30 +52,26 @@ void db_query(char *q) {
 }
 
 struct monsters_t * db_select_monsters(char *a){
-    char *s;
-    asprintf(&s, "select rowid from monsters order by rowid desc limit 1;");
     sqlite3_stmt *r;
-    sqlite3_stmt *v;
-    char *z;
-    static struct monsters_t b[2];
+    int i = 0;
     sqlite3_open("sqlite.db", &db);
-    sqlite3_prepare_v2(db, s, -1, &v, 0);
-    sqlite3_step(v);
-    printf("%d", sqlite3_column_int(r,0));
-    sqlite3_finalize(v);
     sqlite3_prepare_v2(db, a, -1, &r, 0);
-    for (int i = 0; i < 2; i++) {
-        sqlite3_step(r);
-        asprintf(&z, "%s", sqlite3_column_text(r, 0));
-        b[i].name = z;
-        b[i].life = sqlite3_column_int(r,1);
-        b[i].xpos = sqlite3_column_int(r,2);
-        b[i].ypos = sqlite3_column_int(r,3);
-        z = 0;
+    while (sqlite3_step(r) == SQLITE_ROW){
+        i++;
+    }
+//    static struct monsters_t e[i];
+    struct monsters_t* e = (struct monsters_t*)malloc(sizeof(struct monsters_t) * i);
+    i = 0;
+    while (sqlite3_step(r) == SQLITE_ROW){
+        asprintf(&e[i].name,"%s", sqlite3_column_text(r, 0));
+        e[i].life = sqlite3_column_int(r, 1);
+        e[i].xpos = sqlite3_column_int(r, 2);
+        e[i].ypos = sqlite3_column_int(r, 3);
+        i++;
     }
     sqlite3_finalize(r);
     sqlite3_close(db);
-    return b;
+    return e;
 }
 
 char * db_insert_monsters(struct monsters_t a[], int b){

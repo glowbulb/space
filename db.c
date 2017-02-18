@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     struct monsters_t *result = db_select_monsters(db_select_table("monsters"));
 
-    monsters_print(result, 2);
+    monsters_print(result);
 
     return 0;
 }
