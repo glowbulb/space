@@ -58,7 +58,7 @@ struct monsters_t * db_select_monsters(char *a){
     e = malloc(sizeof(int));
     i = 0;
     while (sqlite3_step(r) == SQLITE_ROW){
-        e = realloc(e, ((i + 1) * sizeof(struct monsters_t)) + 8);
+        e = realloc(e, ((i + 1) * sizeof(struct monsters_t)));
         asprintf(&e[i].name,"%s", sqlite3_column_text(r, 0));
         e[i].life = sqlite3_column_int(r, 1);
         e[i].xpos = sqlite3_column_int(r, 2);
